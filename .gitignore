@@ -1,3 +1,8 @@
+# User defined .gitignore files
+activate_venv.sh
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
