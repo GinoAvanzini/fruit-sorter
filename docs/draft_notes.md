@@ -3,6 +3,13 @@
 ## Notes
 
 
+### Hu moments
+
+A log transform is applied to all the values
+
+H_i = -sign(H_i)*log10(abs(H_i))
+
+
 ### Thresholding
 Thresholding is used to create a binary image from a grayscale image 1.
 
