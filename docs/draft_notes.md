@@ -29,6 +29,10 @@ The steps of the algorithm are as follows:
 References
 1 Canny, J., A Computational Approach To Edge Detection, IEEE Trans. Pattern Analysis and Machine Intelligence, 8:679-714, 1986 DOI:10.1109/TPAMI.1986.4767851 
 
+### Inertia tensor for feature extraction
+
+The relative magnitude of the eigenvalues of the tensor is thus a measure of the elongation of a (bright) object in the image
+
 ### K-means algorithm
 
 #### A
