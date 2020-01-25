@@ -5,6 +5,8 @@
 
 ### Hu moments
 
+Hu Moments ( or rather Hu moment invariants ) are a set of 7 numbers calculated using central moments that are invariant to image transformations. The first 6 moments have been proved to be invariant to translation, scale, and rotation, and reflection. While the 7th moment’s sign changes for image reflection.
+
 A log transform is applied to all the values
 
 H_i = -sign(H_i)*log10(abs(H_i))
