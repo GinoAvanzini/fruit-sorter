@@ -19,7 +19,6 @@ class Fruit:
         fruit_image = io.imread(self.path, as_gray=True)
         
         thresholded_fruit = fruit_image < self.threshold
-        del fruit_image
         
         io.imshow(thresholded_fruit)
         
@@ -28,6 +27,8 @@ class Fruit:
         hu_moments = measure.moments_hu(measure.moments_normalized(fruit_central_moments))
         # We only keep relevant hu moments, that is, components 1 and 3
         self.hu_moments = hu_moments[[1, 3]]
+        
+        # And we apply a log transform to them
         self.hu_moments[:] = [-1*np.sign(j)*np.log10(np.abs(j)) for j in self.hu_moments[:]]
         
         fruit_eigvalues = measure.inertia_tensor_eigvals(thresholded_fruit, mu=fruit_central_moments)
