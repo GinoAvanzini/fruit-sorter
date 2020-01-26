@@ -20,8 +20,6 @@ class Fruit:
         
         thresholded_fruit = fruit_image < self.threshold
         
-        io.imshow(thresholded_fruit)
-        
         fruit_central_moments = measure.moments_central(thresholded_fruit)
         
         hu_moments = measure.moments_hu(measure.moments_normalized(fruit_central_moments))
