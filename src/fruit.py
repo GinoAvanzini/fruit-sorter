@@ -13,6 +13,7 @@ class Fruit:
         self.threshold = 0.9
         
         self.calculate_features(debug)
+        self.features = np.append(self.hu_moments, self.moment_ratio)
         
         
     def calculate_features(self, debug=False):
@@ -32,10 +33,12 @@ class Fruit:
         fruit_eigvalues = measure.inertia_tensor_eigvals(thresholded_fruit, mu=fruit_central_moments)
         self.moment_ratio = max(fruit_eigvalues)/min(fruit_eigvalues)
 
-        if debug == True:
+        if debug:
             print("Central moments: \n", fruit_central_moments)
             print("Hu moments:\n", hu_moments)
             print("Inertia tensor eigenvalues:\n", fruit_eigvalues)
+            print("Moment ratio:\n", self.moment_ratio)
+            print("Features: \n", np.append(self.hu_moments, self.moment_ratio))
 
 
 def main():
@@ -43,10 +46,7 @@ def main():
     # Path of a random image fruit
     path = '/home/gino/Desktop/fruits-360_dataset/fruits-360/Training/Banana Lady Finger/0_100.jpg'
     
-    banana = Fruit(path)
-    
-    print(banana.hu_moments)
-    print(banana.moment_ratio)
+    banana = Fruit(path, debug=True)
     
     # For matplotlib to be able to display the image install tk
     # In arch-like distros just do: sudo pacman -S tk
