@@ -15,8 +15,9 @@ from fruit import Fruit
 
 from random import shuffle, randrange
 from skimage import io
-
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 
@@ -44,9 +45,9 @@ def k_means(fruit_list, init_means):
 
         
         assignments_changed = False
-        sum_a = np.zeros(3)
-        sum_b = np.zeros(3)
-        sum_c = np.zeros(3)
+        sum_a = np.zeros(fruit_list[0].feature_size)
+        sum_b = np.zeros(fruit_list[0].feature_size)
+        sum_c = np.zeros(fruit_list[0].feature_size)
         count_a = 0
         count_b = 0
         count_c = 0
@@ -80,7 +81,8 @@ def k_means(fruit_list, init_means):
                 count_c += 1
             else:
                 print("You have incredibly bad luck. By now we ignore this")
-                print("This incident will be reported")
+                print("This incident will be reported\n")
+                pass
         
         A_centroid = sum_a / count_a
         B_centroid = sum_b / count_b
@@ -93,10 +95,9 @@ def k_means(fruit_list, init_means):
     return [A_centroid, B_centroid, C_centroid]
 
 
-def main():
+def main(plotting=False, feature_mode='hu_only'):
     
     fruit_list = []
-    
     
     banana_collection = io.ImageCollection([path 
                                             + 'fruits-360/Training/Banana/*.jpg', 
@@ -108,13 +109,14 @@ def main():
     lemon_collection = io.ImageCollection(path 
                                           + 'fruits-360/Training/Lemon/*.jpg', 
                                           load_func=img_grayscale)
-
             
-    fruit_list = [Fruit(banana_collection.files[i]) for i in range(len(banana_collection))]
-    fruit_list.extend([Fruit(orange_collection.files[i]) for i in range(len(orange_collection))])
-    fruit_list.extend([Fruit(lemon_collection.files[i]) for i in range(len(lemon_collection))])
-    
-    
+    fruit_list = [Fruit(banana_collection.files[i], feature_mode=feature_mode) 
+                  for i in range(len(banana_collection))]
+    fruit_list.extend([Fruit(orange_collection.files[i], feature_mode=feature_mode) 
+                       for i in range(len(orange_collection))])
+    fruit_list.extend([Fruit(lemon_collection.files[i], feature_mode=feature_mode) 
+                       for i in range(len(lemon_collection))])
+        
     banana_size = len(banana_collection)
     orange_size = len(orange_collection)
     lemon_size = len(lemon_collection)
@@ -124,10 +126,10 @@ def main():
         random_orange_position = randrange(banana_size, banana_size + orange_size - 1)
         random_lemon_position = randrange(banana_size + orange_size, len(fruit_list))
     
-        cheat_means = np.array([ np.append(fruit_list[random_banana_position].hu_moments, fruit_list[random_banana_position].moment_ratio),
-                    np.append(fruit_list[random_orange_position].hu_moments, fruit_list[random_orange_position].moment_ratio),
-                    np.append(fruit_list[random_lemon_position].hu_moments, fruit_list[random_lemon_position].moment_ratio)
-                    ])
+        cheat_means = np.array([fruit_list[random_banana_position].features,
+                                fruit_list[random_orange_position].features,
+                                fruit_list[random_lemon_position].features
+                                ])
 
         shuffle(fruit_list)
         means = k_means(fruit_list, cheat_means)
@@ -136,19 +138,74 @@ def main():
         initial_means = []
         for i in range(0, 3):
             position = randrange(0, len(fruit_list))
-            initial_means.append(np.append(fruit_list[position].hu_moments, fruit_list[position].moment_ratio))
+            initial_means.append(fruit_list[position].features)
         
         shuffle(fruit_list)
         means = k_means(fruit_list, np.array(initial_means))
         
-        
-        
     print(means)
-    #print(len(fruit_list))
-    #print(fruit_list)
     
+    # Plotting results
+    if plotting:
+        if fruit_list[0].feature_size == 3:
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            
+            for fruit in fruit_list:
+                if fruit.guessed_label == 'A':
+                    color = 'red'
+                elif fruit.guessed_label == 'B':
+                    color = 'green'
+                elif fruit.guessed_label == 'C':
+                    color = 'blue'
+                else:
+                    color = 'black'
+
+                ax.scatter(fruit.features[0], fruit.features[1], fruit.features[2], c=color, alpha=.05)
+            
+            ax.scatter(means[0][0], means[0][1], means[0][2], marker='^', color='black', alpha=1)
+            ax.scatter(means[1][0], means[1][1], means[1][2], marker='^', color='black', alpha=1)
+            ax.scatter(means[2][0], means[2][1], means[2][2], marker='^', color='black', alpha=1)
+            
+            plt.show()
+            
+        elif fruit_list[0].feature_size == 2:
+            fig, ax = plt.subplots(nrows=1, ncols=1)
+            
+            for fruit in fruit_list:
+                if fruit.guessed_label == 'A':
+                    color = 'red'
+                elif fruit.guessed_label == 'B':
+                    color = 'green'
+                elif fruit.guessed_label == 'C':
+                    color = 'blue'
+                else:
+                    color = 'black'
+
+                ax.scatter(x=fruit.features[0], y=fruit.features[1], c=color, alpha=.05)
+
+            ax.scatter(x=means[0][0], y=means[0][1], marker='^', color='black', alpha=1)
+            ax.scatter(x=means[1][0], y=means[1][1], marker='^', color='black', alpha=1)
+            ax.scatter(x=means[2][0], y=means[2][1], marker='^', color='black', alpha=1)
+            
+            ax.set_xlim(left=0)
+            ax.set_xlim(right=10)
+            
+            ax.set_ylim(bottom=0)
+            ax.set_xlabel("Hu[1] (log-normalized)")
+            ax.set_ylabel("Hu[3] (log-normalized)")
+            #ax.set_aspect("equal")
+            
+            plt.show()
+
     return
 
 
 if __name__ == '__main__':
-    main()
+    
+    # Plotting is self-explainatory
+    # Feature mode is to toggle the features used in k-means training
+    # hu_plus_ratio = [ Hu[1], Hu[3], moment_ratio ]
+    # hu_only = [ Hu[1], Hu[3] ]
+    # The latter allows a better clustering
+    main(plotting=True, feature_mode='hu_only')
