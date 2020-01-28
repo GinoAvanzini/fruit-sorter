@@ -8,7 +8,7 @@ path = '/home/gino/Desktop/fruits-360_dataset/'
 # Initial means will be from one banana, one orange and one lemon
 # Not recommended to leave False because there isn't an equal
 # amount of each type of fruits
-cheats_on = False
+cheats_on = True
 
 
 from fruit import Fruit
@@ -23,6 +23,46 @@ import matplotlib.pyplot as plt
 
 def img_grayscale(image):
     return io.imread(image, as_gray=True)
+
+
+def cluster_identification(fruit_list):
+    A = {'banana': 0,
+         'orange': 0,
+         'lemon': 0}
+    B = {'banana': 0,
+         'orange': 0,
+         'lemon': 0}
+    C = {'banana': 0,
+         'orange': 0,
+         'lemon': 0}
+    
+    for fruit in fruit_list:
+        if fruit.guessed_label == 'A':
+            if fruit.known_label == 'banana':
+                A['banana'] += 1
+            elif fruit.known_label == 'orange':
+                A['orange'] += 1
+            elif fruit.known_label == 'lemon':
+                A['lemon'] += 1
+        
+        if fruit.guessed_label == 'B':
+            if fruit.known_label == 'banana':
+                B['banana'] += 1
+            elif fruit.known_label == 'orange':
+                B['orange'] += 1
+            elif fruit.known_label == 'lemon':
+                B['lemon'] += 1
+
+        if fruit.guessed_label == 'C':
+            if fruit.known_label == 'banana':
+                C['banana'] += 1
+            elif fruit.known_label == 'orange':
+                C['orange'] += 1
+            elif fruit.known_label == 'lemon':
+                C['lemon'] += 1
+                
+    return [A, B, C]
+
 
 def k_means(fruit_list, init_means):
     
@@ -90,7 +130,6 @@ def k_means(fruit_list, init_means):
         
     print(k)
     print(j)
-    print(k*len(fruit_list))
                 
     return [A_centroid, B_centroid, C_centroid]
 
@@ -110,11 +149,11 @@ def main(plotting=False, feature_mode='hu_only'):
                                           + 'fruits-360/Training/Lemon/*.jpg', 
                                           load_func=img_grayscale)
             
-    fruit_list = [Fruit(banana_collection.files[i], feature_mode=feature_mode) 
+    fruit_list = [Fruit(banana_collection.files[i], 'banana', feature_mode=feature_mode) 
                   for i in range(len(banana_collection))]
-    fruit_list.extend([Fruit(orange_collection.files[i], feature_mode=feature_mode) 
+    fruit_list.extend([Fruit(orange_collection.files[i], 'orange', feature_mode=feature_mode) 
                        for i in range(len(orange_collection))])
-    fruit_list.extend([Fruit(lemon_collection.files[i], feature_mode=feature_mode) 
+    fruit_list.extend([Fruit(lemon_collection.files[i], 'lemon', feature_mode=feature_mode) 
                        for i in range(len(lemon_collection))])
         
     banana_size = len(banana_collection)
@@ -145,6 +184,9 @@ def main(plotting=False, feature_mode='hu_only'):
         
     print(means)
     
+    clusters = cluster_identification(fruit_list)
+    print(clusters)
+
     # Plotting results
     if plotting:
         if fruit_list[0].feature_size == 3:
@@ -197,7 +239,7 @@ def main(plotting=False, feature_mode='hu_only'):
             #ax.set_aspect("equal")
             
             plt.show()
-
+    
     return
 
 

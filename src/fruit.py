@@ -4,11 +4,11 @@ import numpy as np
 
 
 class Fruit:
-    def __init__(self, path, debug=False, feature_mode='hu_plus_ratio'):
+    def __init__(self, path, label, debug=False, feature_mode='hu_plus_ratio'):
         self.path = path
         self.hu_moments = []
         self.moment_ratio = 0
-        self.known_label = None
+        self.known_label = label
         self.guessed_label = None
         self.threshold = 0.9
         self.feature_mode = feature_mode
