@@ -8,7 +8,7 @@ path = '/home/gino/Desktop/fruits-360_dataset/'
 # Initial means will be from one banana, one orange and one lemon
 # Not recommended to leave False because there isn't an equal
 # amount of each type of fruits
-cheats_on = True
+cheats_on = False
 
 
 from fruit import Fruit
@@ -18,7 +18,6 @@ from skimage import io
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 
 def img_grayscale(image):
@@ -78,12 +77,7 @@ def k_means(fruit_list, init_means):
     
     while (assignments_changed):
         k += 1
-        
-        #print(A_centroid)
-        #print(B_centroid)
-        #print(C_centroid, "\n\n")
-
-        
+                
         assignments_changed = False
         sum_a = np.zeros(fruit_list[0].feature_size)
         sum_b = np.zeros(fruit_list[0].feature_size)
@@ -92,7 +86,6 @@ def k_means(fruit_list, init_means):
         count_b = 0
         count_c = 0
         
-        
         for fruit in fruit_list:
             j += 1
             dist_a = np.sum(np.power(fruit.features - A_centroid, 2))
@@ -100,11 +93,9 @@ def k_means(fruit_list, init_means):
             dist_c = np.sum(np.power(fruit.features - C_centroid, 2))
             
             if dist_a < dist_b and dist_a < dist_c:
-                
                 if fruit.guessed_label != 'A':
                     assignments_changed = True
                     fruit.guessed_label = 'A'
-                
                 sum_a += fruit.features
                 count_a += 1
             elif dist_b < dist_a and dist_b < dist_c:
@@ -122,7 +113,7 @@ def k_means(fruit_list, init_means):
             else:
                 print("You have incredibly bad luck. By now we ignore this")
                 print("This incident will be reported\n")
-                pass
+                continue
         
         A_centroid = sum_a / count_a
         B_centroid = sum_b / count_b
@@ -134,7 +125,32 @@ def k_means(fruit_list, init_means):
     return [A_centroid, B_centroid, C_centroid]
 
 
+def k_means_test(test_list, means):
+    
+    A_centroid = np.array(means[0])
+    B_centroid = np.array(means[1])
+    C_centroid = np.array(means[2])
+    
+    for fruit in test_list:
+        dist_a = np.sum(np.power(fruit.features - A_centroid, 2))
+        dist_b = np.sum(np.power(fruit.features - B_centroid, 2))
+        dist_c = np.sum(np.power(fruit.features - C_centroid, 2))
+
+        if dist_a < dist_b and dist_a < dist_c:
+            fruit.guessed_label = 'A'
+        elif dist_b < dist_a and dist_b < dist_c:
+            fruit.guessed_label = 'B'
+        elif dist_c < dist_a and dist_c < dist_b:
+            fruit.guessed_label = 'C'
+        
+    return
+
+
 def main(plotting=False, feature_mode='hu_only'):
+    
+    ##############################
+    ########## Training ##########
+    ##############################
     
     fruit_list = []
     
@@ -184,8 +200,35 @@ def main(plotting=False, feature_mode='hu_only'):
         
     print(means)
     
-    clusters = cluster_identification(fruit_list)
-    print(clusters)
+    training_clusters = cluster_identification(fruit_list)
+    print("Training:\n", training_clusters)
+    
+    ##########################
+    ########## Test ##########
+    ##########################
+    
+    banana_collection = io.ImageCollection([path 
+                                            + 'fruits-360/Test/Banana/*.jpg', 
+                                            path + 'fruits-360/Test/Banana Lady Finger/*.jpg'],
+                                            load_func=img_grayscale)
+    orange_collection = io.ImageCollection(path 
+                                           + 'fruits-360/Test/Orange/*.jpg',
+                                           load_func=img_grayscale)
+    lemon_collection = io.ImageCollection(path 
+                                          + 'fruits-360/Test/Lemon/*.jpg', 
+                                          load_func=img_grayscale)
+            
+    test_list = [Fruit(banana_collection.files[i], 'banana', feature_mode=feature_mode) 
+                  for i in range(len(banana_collection))]
+    test_list.extend([Fruit(orange_collection.files[i], 'orange', feature_mode=feature_mode) 
+                       for i in range(len(orange_collection))])
+    test_list.extend([Fruit(lemon_collection.files[i], 'lemon', feature_mode=feature_mode) 
+                       for i in range(len(lemon_collection))])
+
+    k_means_test(test_list, means)
+
+    test_clusters = cluster_identification(test_list)
+    print("Test:\n", test_clusters)
 
     # Plotting results
     if plotting:
