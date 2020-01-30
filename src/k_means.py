@@ -20,9 +20,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def img_grayscale(image):
-    return io.imread(image, as_gray=True)
-
 
 def cluster_identification(fruit_list):
     A = {'banana': 0,
@@ -157,13 +154,13 @@ def main(plotting=False, feature_mode='hu_only'):
     banana_collection = io.ImageCollection([path 
                                             + 'fruits-360/Training/Banana/*.jpg', 
                                             path + 'fruits-360/Training/Banana Lady Finger/*.jpg'],
-                                            load_func=img_grayscale)
+                                            load_func=Fruit.img_grayscale)
     orange_collection = io.ImageCollection(path 
                                            + 'fruits-360/Training/Orange/*.jpg',
-                                           load_func=img_grayscale)
+                                           load_func=Fruit.img_grayscale)
     lemon_collection = io.ImageCollection(path 
                                           + 'fruits-360/Training/Lemon/*.jpg', 
-                                          load_func=img_grayscale)
+                                          load_func=Fruit.img_grayscale)
             
     fruit_list = [Fruit(banana_collection.files[i], 'banana', feature_mode=feature_mode) 
                   for i in range(len(banana_collection))]
@@ -210,13 +207,13 @@ def main(plotting=False, feature_mode='hu_only'):
     banana_collection = io.ImageCollection([path 
                                             + 'fruits-360/Test/Banana/*.jpg', 
                                             path + 'fruits-360/Test/Banana Lady Finger/*.jpg'],
-                                            load_func=img_grayscale)
+                                            load_func=Fruit.img_grayscale)
     orange_collection = io.ImageCollection(path 
                                            + 'fruits-360/Test/Orange/*.jpg',
-                                           load_func=img_grayscale)
+                                           load_func=Fruit.img_grayscale)
     lemon_collection = io.ImageCollection(path 
                                           + 'fruits-360/Test/Lemon/*.jpg', 
-                                          load_func=img_grayscale)
+                                          load_func=Fruit.img_grayscale)
             
     test_list = [Fruit(banana_collection.files[i], 'banana', feature_mode=feature_mode) 
                   for i in range(len(banana_collection))]
@@ -294,3 +291,6 @@ if __name__ == '__main__':
     # hu_only = [ Hu[1], Hu[3] ]
     # The latter allows a better clustering
     main(plotting=True, feature_mode='hu_only')
+
+
+#

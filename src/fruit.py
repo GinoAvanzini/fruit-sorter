@@ -49,6 +49,11 @@ class Fruit:
             print("Features: \n", self.features)
 
 
+    @staticmethod
+    def img_grayscale(image):
+        return io.imread(image, as_gray=True)
+
+
 def main():
     
     # Path of a random image fruit
@@ -64,3 +69,6 @@ def main():
     
 if __name__ == '__main__':
     main()
+
+
+#
