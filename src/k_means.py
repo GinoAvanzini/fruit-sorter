@@ -172,7 +172,7 @@ def main(plotting=False, feature_mode='hu_only'):
     banana_size = len(banana_collection)
     orange_size = len(orange_collection)
     lemon_size = len(lemon_collection)
-    
+
     if cheats_on:
         random_banana_position = randrange(0, banana_size - 1)
         random_orange_position = randrange(banana_size, banana_size + orange_size - 1)
@@ -182,9 +182,7 @@ def main(plotting=False, feature_mode='hu_only'):
                                 fruit_list[random_orange_position].features,
                                 fruit_list[random_lemon_position].features
                                 ])
-
-        shuffle(fruit_list)
-        means = k_means(fruit_list, cheat_means)
+        initial_means = cheat_means
         
     else:
         initial_means = []
@@ -192,8 +190,10 @@ def main(plotting=False, feature_mode='hu_only'):
             position = randrange(0, len(fruit_list))
             initial_means.append(fruit_list[position].features)
         
-        shuffle(fruit_list)
-        means = k_means(fruit_list, np.array(initial_means))
+        initial_means = np.array(initial_means)
+
+    shuffle(fruit_list)
+    means = k_means(fruit_list, initial_means)
         
     print(means)
     
@@ -227,7 +227,9 @@ def main(plotting=False, feature_mode='hu_only'):
     test_clusters = cluster_identification(test_list)
     print("Test:\n", test_clusters)
 
-    # Plotting results
+    ##############################
+    ########## Plotting ##########
+    ##############################
     if plotting:
         if fruit_list[0].feature_size == 3:
             fig = plt.figure()
