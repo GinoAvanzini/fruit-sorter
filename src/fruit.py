@@ -1,5 +1,5 @@
 
-from skimage import io, measure
+from skimage import io, measure, filters
 import numpy as np
 
 
@@ -10,7 +10,7 @@ class Fruit:
         self.moment_ratio = 0
         self.known_label = label
         self.guessed_label = None
-        self.threshold = 0.9
+        self.threshold = None
         self.feature_mode = feature_mode
         
         self.calculate_features(self.feature_mode, debug)
@@ -19,6 +19,11 @@ class Fruit:
     def calculate_features(self, feature_mode, debug=False):
 
         fruit_image = io.imread(self.path, as_gray=True)
+        
+        sigma = 0.005*fruit_image.shape[0]
+        
+        # Apply triangle threshold to gaussian filtered image
+        self.threshold = filters.threshold_triangle(filters.gaussian(fruit_image, sigma=sigma))
         thresholded_fruit = fruit_image < self.threshold
         
         fruit_central_moments = measure.moments_central(thresholded_fruit)
@@ -40,6 +45,7 @@ class Fruit:
             self.feature_size = 2
             
         if debug:
+            print("threshold: \n", self.threshold)
             print("Central moments: \n", fruit_central_moments)
             print("Hu moments:\n", hu_moments)
             print("Normalized Hu moments:\n",

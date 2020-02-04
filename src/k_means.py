@@ -151,10 +151,14 @@ def main(plotting=False, feature_mode='hu_only'):
     
     fruit_list = []
     
-    banana_collection = io.ImageCollection([path 
-                                            + 'fruits-360/Training/Banana/*.jpg', 
-                                            path + 'fruits-360/Training/Banana Lady Finger/*.jpg'],
+    #banana_collection = io.ImageCollection([path 
+     #                                       + 'fruits-360/Training/Banana/*.jpg', 
+      #                                      path + 'fruits-360/Training/Banana Lady Finger/*.jpg'],
+       #                                     load_func=Fruit.img_grayscale)
+    banana_collection = io.ImageCollection(path 
+                                            + 'fruits-360/Training/Banana/*.jpg',
                                             load_func=Fruit.img_grayscale)
+
     orange_collection = io.ImageCollection(path 
                                            + 'fruits-360/Training/Orange/*.jpg',
                                            load_func=Fruit.img_grayscale)
