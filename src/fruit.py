@@ -4,7 +4,7 @@ import numpy as np
 
 
 class Fruit:
-    def __init__(self, path, label, debug=False, feature_mode='hu_plus_ratio'):
+    def __init__(self, path, label=None, debug=False, feature_mode='hu_plus_ratio'):
         self.path = path
         self.hu_moments = []
         self.moment_ratio = 0
@@ -21,10 +21,11 @@ class Fruit:
         fruit_image = io.imread(self.path, as_gray=True)
         
         sigma = 0.005*fruit_image.shape[0]
-        
+        filtered_fruit = filters.gaussian(fruit_image, sigma=sigma)
+
         # Apply triangle threshold to gaussian filtered image
-        self.threshold = filters.threshold_triangle(filters.gaussian(fruit_image, sigma=sigma))
-        thresholded_fruit = fruit_image < self.threshold
+        self.threshold = filters.threshold_triangle(filtered_fruit)
+        thresholded_fruit = filtered_fruit < self.threshold
         
         fruit_central_moments = measure.moments_central(thresholded_fruit)
         hu_moments = measure.moments_hu(measure.moments_normalized(fruit_central_moments))
