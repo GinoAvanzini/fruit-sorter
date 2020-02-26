@@ -1,0 +1,16 @@
+initial_means = [[ 1.21294113  4.40451592]
+ [ 6.00762959 10.06482223]
+ [ 2.86908773  7.23733365]]
+4
+3592
+[array([1.60588113, 3.53855973]), array([5.07364394, 9.03359999]), array([2.98995007, 7.63655699])]
+Training:
+ [{'banana': 298, 'orange': 0, 'lemon': 0}, {'banana': 0, 'orange': 304, 'lemon': 3}, {'banana': 0, 'orange': 0, 'lemon': 293}]
+Test Fruits 360:
+ [{'banana': 166, 'orange': 0, 'lemon': 0}, {'banana': 0, 'orange': 160, 'lemon': 0}, {'banana': 0, 'orange': 0, 'lemon': 164}]
+Test own dataset:
+ [{'banana': 16, 'orange': 0, 'lemon': 2}, {'banana': 0, 'orange': 14, 'lemon': 0}, {'banana': 0, 'orange': 2, 'lemon': 14}]
+python src/k_means.py > src/result_kmeans.txt  136,77s user 25,13s system 121% cpu 2:13,22 total
+
+# Command used
+# { time py src/k_means.py > src/result_kmeans.txt ; } 2>> src/result_kmeans.txt
