@@ -3,6 +3,7 @@
 
 # Path to Fruits 360 dataset
 path = '/home/gino/Desktop/fruits-360_dataset/'
+path_own_dataset = '/home/gino/Desktop/my_dataset/'
 
 
 from fruit import Fruit
@@ -93,9 +94,8 @@ def main(feature_mode='hu_only', verbose=False):
     ########## Test ##########
     ##########################
 
-    banana_collection = io.ImageCollection([path 
-                                            + 'fruits-360/Test/Banana/*.jpg', 
-                                            path + 'fruits-360/Test/Banana Lady Finger/*.jpg'],
+    banana_collection = io.ImageCollection(path 
+                                            + 'fruits-360/Test/Banana/*.jpg',
                                             load_func=Fruit.img_grayscale)
     orange_collection = io.ImageCollection(path 
                                            + 'fruits-360/Test/Orange/*.jpg',
@@ -115,7 +115,40 @@ def main(feature_mode='hu_only', verbose=False):
     ########## k-nn ##########
     ##########################
 
-    neighbours = 2
+    neighbours = 20
+    k_nn(neighbours, fruit_list, test_list)
+
+    if verbose:
+        print(list(zip([fruit.known_label for fruit in test_list], 
+        [fruit.guessed_label for fruit in test_list])))
+        for fruit in test_list:
+            if fruit.guessed_label != fruit.known_label:
+                print("Error found!")
+                
+                
+    ########################################
+    ########## Test (own dataset) ##########
+    ########################################
+    
+    print("\nOWN DATASET\n")
+
+    banana_collection = io.ImageCollection(path_own_dataset 
+                                           + 'Test/Banana/*.jpg',
+                                           load_func=Fruit.img_grayscale)
+    orange_collection = io.ImageCollection(path_own_dataset 
+                                          + 'Test/Orange/*.jpg',
+                                          load_func=Fruit.img_grayscale)
+    lemon_collection = io.ImageCollection(path_own_dataset 
+                                         + 'Test/Lemon/*.jpg', 
+                                         load_func=Fruit.img_grayscale)
+            
+    test_list = [Fruit(banana_collection.files[i], 'banana', feature_mode=feature_mode) 
+                  for i in range(len(banana_collection))]
+    test_list.extend([Fruit(orange_collection.files[i], 'orange', feature_mode=feature_mode) 
+                       for i in range(len(orange_collection))])
+    test_list.extend([Fruit(lemon_collection.files[i], 'lemon', feature_mode=feature_mode) 
+                       for i in range(len(lemon_collection))])
+
     k_nn(neighbours, fruit_list, test_list)
 
     if verbose:

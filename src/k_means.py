@@ -3,12 +3,13 @@
 
 # Path to Fruits 360 dataset
 path = '/home/gino/Desktop/fruits-360_dataset/'
+path_own_dataset = '/home/gino/Desktop/my_dataset/'
 
 # Allow beginning k-means with reasonable means instead of random
 # Initial means will be from one banana, one orange and one lemon
 # Not recommended to leave False because there isn't an equal
 # amount of each type of fruits
-cheats_on = False
+cheats_on = True
 
 
 from fruit import Fruit
@@ -62,7 +63,7 @@ def cluster_identification(fruit_list):
 
 def k_means(fruit_list, init_means):
     
-    print(init_means)
+    print("initial_means = ", init_means)
     
     A_centroid = init_means[0, :]
     B_centroid = init_means[1, :]
@@ -208,9 +209,8 @@ def main(plotting=False, feature_mode='hu_only'):
     ########## Test ##########
     ##########################
     
-    banana_collection = io.ImageCollection([path 
-                                            + 'fruits-360/Test/Banana/*.jpg', 
-                                            path + 'fruits-360/Test/Banana Lady Finger/*.jpg'],
+    banana_collection = io.ImageCollection(path 
+                                            + 'fruits-360/Test/Banana/*.jpg',
                                             load_func=Fruit.img_grayscale)
     orange_collection = io.ImageCollection(path 
                                            + 'fruits-360/Test/Orange/*.jpg',
@@ -229,7 +229,36 @@ def main(plotting=False, feature_mode='hu_only'):
     k_means_test(test_list, means)
 
     test_clusters = cluster_identification(test_list)
-    print("Test:\n", test_clusters)
+    print("Test Fruits 360:\n", test_clusters)
+    
+    ########################################
+    ########## Test (own dataset) ##########
+    ########################################
+
+    banana_collection = io.ImageCollection(path_own_dataset 
+                                           + 'Test/Banana/*.jpg',
+                                           load_func=Fruit.img_grayscale)
+    orange_collection = io.ImageCollection(path_own_dataset 
+                                          + 'Test/Orange/*.jpg',
+                                          load_func=Fruit.img_grayscale)
+    lemon_collection = io.ImageCollection(path_own_dataset 
+                                         + 'Test/Lemon/*.jpg', 
+                                         load_func=Fruit.img_grayscale)
+            
+    test_list = [Fruit(banana_collection.files[i], 'banana', feature_mode=feature_mode) 
+                  for i in range(len(banana_collection))]
+    test_list.extend([Fruit(orange_collection.files[i], 'orange', feature_mode=feature_mode) 
+                       for i in range(len(orange_collection))])
+    test_list.extend([Fruit(lemon_collection.files[i], 'lemon', feature_mode=feature_mode) 
+                       for i in range(len(lemon_collection))])
+
+    k_means_test(test_list, means)
+
+    test_clusters = cluster_identification(test_list)
+    print("Test own dataset:\n", test_clusters)
+
+    
+    
 
     ##############################
     ########## Plotting ##########
